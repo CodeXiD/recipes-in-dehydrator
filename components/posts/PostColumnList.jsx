@@ -3,24 +3,22 @@ import PostColumnItem from "./PostColumnItem";
 import {Touchable} from "react-native-web";
 import {useNavigation} from "@react-navigation/native";
 
-export default function PostColumnList() {
+export default function PostColumnList({ posts }) {
     const navigation = useNavigation();
 
     return (
         <View>
-            <Pressable
-                style={styles.postBlock}
-                onPress={() => navigation.navigate('Post')}
-            >
-                <PostColumnItem />
-            </Pressable>
-
-            <Pressable
-                style={styles.postBlock}
-                onPress={() => navigation.navigate('Post')}
-            >
-                <PostColumnItem />
-            </Pressable>
+            {
+                posts.map(post => (
+                    <Pressable
+                        key={post.id}
+                        style={styles.postBlock}
+                        onPress={() => navigation.navigate('Post')}
+                    >
+                        <PostColumnItem post={post} />
+                    </Pressable>
+                ))
+            }
         </View>
     )
 }

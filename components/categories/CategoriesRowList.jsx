@@ -2,7 +2,7 @@ import {View, StyleSheet, ScrollView, Pressable} from "react-native";
 import CategoryRowItem from "./CategoryRowItem";
 import {useNavigation} from "@react-navigation/native";
 
-export default function CategoriesRowList() {
+export default function CategoriesRowList({ categories }) {
     const navigation = useNavigation();
 
     return (
@@ -10,26 +10,19 @@ export default function CategoriesRowList() {
             style={styles.categoriesList}
             horizontal={true}
         >
-            <Pressable
-                style={styles.categoryItem}
-                onPress={() => navigation.navigate('Category')}
-            >
-                <CategoryRowItem />
-            </Pressable>
-
-            <Pressable
-                style={styles.categoryItem}
-                onPress={() => navigation.navigate('Category')}
-            >
-                <CategoryRowItem />
-            </Pressable>
-
-            <Pressable
-                style={styles.categoryItem}
-                onPress={() => navigation.navigate('Category')}
-            >
-                <CategoryRowItem />
-            </Pressable>
+            {
+                categories.map((category) => {
+                    return (
+                        <Pressable
+                            key={category.id}
+                            style={styles.categoryItem}
+                            onPress={() => navigation.navigate('Category', { categoryId: category.id })}
+                        >
+                            <CategoryRowItem category={category} />
+                        </Pressable>
+                    )
+                })
+            }
         </ScrollView>
     )
 }

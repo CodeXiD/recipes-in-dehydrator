@@ -1,20 +1,23 @@
 import {Image, Text, View, StyleSheet} from "react-native";
 
-export default function PostColumnItem() {
+export default function PostColumnItem({ post }) {
     return (
         <View style={styles.postWrapper}>
             <Image
                 style={styles.postImage}
-                source={{ uri: 'https://spoiledhounds.com/wp-content/uploads/2021/06/Dehydrated-Chicken-Jerky-Dogs-Recipe-Photo.jpg' }}
+                source={{ uri: post.image }}
             />
 
             <View style={styles.postDetails}>
-                <Text style={styles.postTitle}>
-                    Some post title text, for this block
+                <Text
+                    style={styles.postTitle}
+                    numberOfLines={1}
+                >
+                    { post.title }
                 </Text>
 
                 <Text style={styles.postAuthor}>
-                    Kirill Tkachenko
+                    { post.author }
                 </Text>
 
                 <View style={styles.hashtags}>
@@ -35,7 +38,8 @@ export default function PostColumnItem() {
 
 const styles = StyleSheet.create({
     postWrapper: {
-      height: 100,
+        flex: 1,
+        height: 100,
         flexDirection: 'row',
         backgroundColor: '#fff',
         padding: 5,
@@ -48,6 +52,7 @@ const styles = StyleSheet.create({
         marginRight: 12
     },
     postDetails: {
+        flex: 1,
         paddingTop: 14
     },
     postTitle: {

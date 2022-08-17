@@ -1,6 +1,6 @@
 import {Text, View, StyleSheet, Image} from "react-native";
 
-export default function CategoryRowItem() {
+export default function CategoryRowItem({ category }) {
     return (
         <View style={styles.categoryItem}>
             <View style={styles.categoryIconWrapper}>
@@ -9,7 +9,7 @@ export default function CategoryRowItem() {
                     source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2826/2826192.png' }}
                 />
             </View>
-            <Text style={styles.categoryName}>Курячі</Text>
+            <Text style={styles.categoryName}>{ category.name }</Text>
         </View>
     )
 }
