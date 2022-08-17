@@ -21,7 +21,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 180,
         width: 120,
-        borderRadius: 12
+        borderRadius: 12,
+        paddingHorizontal: 12,
     },
     categoryIconWrapper: {
         width: 50,

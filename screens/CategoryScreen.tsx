@@ -5,15 +5,20 @@ import PostColumnList from "../components/posts/PostColumnList";
 import axios from "axios";
 import {useEffect, useState} from "react";
 
-export default function CategoryScreen({ route: { params: { categoryId } } }) {
+// @ts-ignore
+export default function CategoryScreen({ route }) {
     const [isLoading, setLoading] = useState(false);
-    const [category, setCategory] = useState(null)
+    const [category, setCategory] = useState<null | any>(null)
     const [posts, setPosts] = useState([]);
 
     const fetchCategory = async () => {
-        return axios.get(`https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/categories/${categoryId}`)
+        setLoading(true);
+        return axios.get(`https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/categories/${route.params.categoryId}`)
             .then(({ data }) => {
                 setCategory(data);
+            })
+            .finally(() => {
+                setLoading(false);
             })
     }
 
@@ -33,9 +38,7 @@ export default function CategoryScreen({ route: { params: { categoryId } } }) {
 
     useEffect(() => {
         fetchCategory()
-            .then(() => {
-                fetchPosts();
-            })
+            .then(fetchPosts)
     }, [])
 
     return (
