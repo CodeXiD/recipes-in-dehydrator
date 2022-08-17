@@ -1,16 +1,26 @@
-import {View, StyleSheet} from "react-native";
+import {View, StyleSheet, Pressable} from "react-native";
 import PostColumnItem from "./PostColumnItem";
+import {Touchable} from "react-native-web";
+import {useNavigation} from "@react-navigation/native";
 
 export default function PostColumnList() {
+    const navigation = useNavigation();
+
     return (
         <View>
-            <View style={styles.postBlock}>
+            <Pressable
+                style={styles.postBlock}
+                onPress={() => navigation.navigate('Post')}
+            >
                 <PostColumnItem />
-            </View>
+            </Pressable>
 
-            <View style={styles.postBlock}>
+            <Pressable
+                style={styles.postBlock}
+                onPress={() => navigation.navigate('Post')}
+            >
                 <PostColumnItem />
-            </View>
+            </Pressable>
         </View>
     )
 }

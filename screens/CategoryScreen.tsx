@@ -7,7 +7,9 @@ export default function CategoryScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
-            <SimpleHeader />
+            <SimpleHeader>
+                Категорія "Курячі"
+            </SimpleHeader>
 
             <ScrollView style={styles.postListWrapper}>
                 <PostColumnList />

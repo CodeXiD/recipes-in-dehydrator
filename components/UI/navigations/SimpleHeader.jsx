@@ -1,7 +1,7 @@
 import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 
-export default function SimpleHeader({ withBackButton = true }) {
+export default function SimpleHeader({ withBackButton = true, children }) {
     const navigation = useNavigation();
     return (
         <View style={styles.headerWrapper}>
@@ -17,7 +17,7 @@ export default function SimpleHeader({ withBackButton = true }) {
             }
 
             <Text style={styles.screenTitle}>
-                Категорія "Курячі"
+                { children }
             </Text>
         </View>
     )

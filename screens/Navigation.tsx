@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import HomeScreen from "./HomeScreen";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import CategoryScreen from "./CategoryScreen";
+import PostScreen from "./PostScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,10 @@ export default function Navigation() {
                     <Stack.Screen
                         name="Category"
                         component={CategoryScreen}
+                    />
+                    <Stack.Screen
+                        name="Post"
+                        component={PostScreen}
                     />
                 </Stack.Navigator>
             </NavigationContainer>
