@@ -2,31 +2,77 @@ import {Image, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native
 import {SafeAreaView} from "react-native-safe-area-context";
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import PostColumnList from "../components/posts/PostColumnList";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
-export default function PostScreen() {
+// @ts-ignore
+export default function PostScreen({ route: { params: { postId } } }) {
+    const [isLoading, setLoading] = useState(false);
+    const [post, setPost] = useState<null | any>(null)
+
+    const fetchPost = async () => {
+        setLoading(true);
+        return axios.get(`https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/posts/${postId}`)
+            .then(({ data }) => {
+                setPost(data);
+            })
+            .finally(() => {
+                setLoading(false);
+            })
+    }
+
+    useEffect(() => {
+        fetchPost()
+    }, []);
+
+    if(!post) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <StatusBar barStyle="dark-content" />
+                <SimpleHeader>
+                    Завантаження рецепта
+                </SimpleHeader>
+            </SafeAreaView>
+        )
+    }
+
+    const headerTitle = () => post.title.length > 20 ? `${post.title.substring(0, 20)}...` : post.title;
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
             <SimpleHeader>
-                Рецепт "Курячі джерки"
+                Рецепт "{ headerTitle() }"
             </SimpleHeader>
 
-            <View style={styles.postImageWrapper}>
-                <Image
-                    style={styles.postImage}
-                    source={{ uri: 'https://spoiledhounds.com/wp-content/uploads/2021/06/Dehydrated-Chicken-Jerky-Dogs-Recipe-Photo.jpg' }}
-                />
-            </View>
+            <ScrollView>
+                <View style={styles.postImageWrapper}>
+                    <Image
+                        style={styles.postImage}
+                        source={{ uri: post.image }}
+                    />
+                </View>
 
-            <View style={styles.postDetails}>
-                <Text style={styles.postDetailsTitle}>
-                    Курячі джерки
-                </Text>
+                <View style={styles.postDetails}>
+                    <Text style={styles.postDetailsTitle}>
+                        { post.title }
+                    </Text>
 
-                <Text style={styles.postDetailsText}>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                </Text>
-            </View>
+                    <Text style={styles.postDetailsText}>
+                        { post.text }
+                    </Text>
+                </View>
+
+                <View style={styles.authorWrapper}>
+                    <Text style={styles.authorName}>
+                        { post.author }
+                    </Text>
+
+                    <Text style={styles.createdDate}>
+                        { new Date(post.createdAt).toLocaleDateString() }
+                    </Text>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -55,4 +101,18 @@ const styles = StyleSheet.create({
     postDetailsText: {
 
     },
+    authorWrapper: {
+        marginTop: 16,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    authorName: {
+        color: "#2BC169",
+        fontSize: 16
+    },
+    createdDate: {
+        color: '#a8a8a8',
+        fontSize: 14
+    }
 });

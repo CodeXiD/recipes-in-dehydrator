@@ -13,7 +13,7 @@ export default function PostColumnList({ posts }) {
                     <Pressable
                         key={post.id}
                         style={styles.postBlock}
-                        onPress={() => navigation.navigate('Post')}
+                        onPress={() => navigation.navigate('Post', { postId: post.id })}
                     >
                         <PostColumnItem post={post} />
                     </Pressable>

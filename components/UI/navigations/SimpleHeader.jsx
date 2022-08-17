@@ -26,7 +26,8 @@ export default function SimpleHeader({ withBackButton = true, children }) {
 const styles = StyleSheet.create({
     headerWrapper: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingVertical: 12,
     },
     backImage: {
         width: 20,
