@@ -1,23 +1,35 @@
-import {View, StyleSheet, ScrollView} from "react-native";
+import {View, StyleSheet, ScrollView, Pressable} from "react-native";
 import CategoryRowItem from "./CategoryRowItem";
+import {useNavigation} from "@react-navigation/native";
 
 export default function CategoriesRowList() {
+    const navigation = useNavigation();
+
     return (
         <ScrollView
             style={styles.categoriesList}
             horizontal={true}
         >
-            <View style={styles.categoryItem}>
+            <Pressable
+                style={styles.categoryItem}
+                onPress={() => navigation.navigate('Category')}
+            >
                 <CategoryRowItem />
-            </View>
+            </Pressable>
 
-            <View style={styles.categoryItem}>
+            <Pressable
+                style={styles.categoryItem}
+                onPress={() => navigation.navigate('Category')}
+            >
                 <CategoryRowItem />
-            </View>
+            </Pressable>
 
-            <View style={styles.categoryItem}>
+            <Pressable
+                style={styles.categoryItem}
+                onPress={() => navigation.navigate('Category')}
+            >
                 <CategoryRowItem />
-            </View>
+            </Pressable>
         </ScrollView>
     )
 }
