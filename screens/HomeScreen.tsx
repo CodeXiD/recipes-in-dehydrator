@@ -5,6 +5,7 @@ import CategoriesRowList from "../components/categories/CategoriesRowList";
 import PostColumnList from "../components/posts/PostColumnList";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import SimpleLoader from "../components/UI/general/SimpleLoader";
 
 export default function HomeScreen() {
     const [isLoading, setLoading] = useState(false);
@@ -46,7 +47,19 @@ export default function HomeScreen() {
             await fetchCategories();
             await fetchPopularRecipes();
         })
-    }, [])
+    }, []);
+
+    const categoriesContent = categories.length ? (
+        <CategoriesRowList
+            categories={categories}
+        />
+    ) : null;
+
+    const popularRecipesContent = (
+        <PostColumnList
+            posts={popularRecipes}
+        />
+    );
 
     return (
         <SafeAreaView style={styles.container}>
@@ -61,13 +74,7 @@ export default function HomeScreen() {
                         Категорії
                     </Text>
 
-                    {
-                        categories.length ? (
-                            <CategoriesRowList
-                                categories={categories}
-                            />
-                        ) : null
-                    }
+                    {isLoading ? <SimpleLoader /> : categoriesContent}
                 </View>
 
                 <View>
@@ -75,10 +82,7 @@ export default function HomeScreen() {
                         Популярні рецепти
                     </Text>
 
-
-                    <PostColumnList
-                        posts={popularRecipes}
-                    />
+                    {isLoading ? <SimpleLoader /> : popularRecipesContent}
                 </View>
             </ScrollView>
         </SafeAreaView>

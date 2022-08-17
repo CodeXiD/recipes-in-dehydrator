@@ -4,6 +4,7 @@ import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import PostColumnList from "../components/posts/PostColumnList";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import SimpleLoader from "../components/UI/general/SimpleLoader";
 
 // @ts-ignore
 export default function CategoryScreen({ route }) {
@@ -41,6 +42,12 @@ export default function CategoryScreen({ route }) {
             .then(fetchPosts)
     }, [])
 
+    const postsContent = posts.length ? (
+        <ScrollView style={styles.postListWrapper}>
+            <PostColumnList posts={posts} />
+        </ScrollView>
+    ) : null;
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
@@ -48,13 +55,7 @@ export default function CategoryScreen({ route }) {
                 {category ? `Категорія "${category.name}"` : 'Категорія'}
             </SimpleHeader>
 
-            {
-                posts.length ? (
-                    <ScrollView style={styles.postListWrapper}>
-                        <PostColumnList posts={posts} />
-                    </ScrollView>
-                ) : null
-            }
+            {isLoading ? <SimpleLoader /> : postsContent}
         </SafeAreaView>
     );
 }

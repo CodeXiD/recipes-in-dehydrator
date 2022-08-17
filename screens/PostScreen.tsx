@@ -4,6 +4,7 @@ import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import PostColumnList from "../components/posts/PostColumnList";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import SimpleLoader from "../components/UI/general/SimpleLoader";
 
 // @ts-ignore
 export default function PostScreen({ route: { params: { postId } } }) {
@@ -38,6 +39,37 @@ export default function PostScreen({ route: { params: { postId } } }) {
 
     const headerTitle = () => post.title.length > 20 ? `${post.title.substring(0, 20)}...` : post.title;
 
+    const postContent = (
+        <ScrollView>
+            <View style={styles.postImageWrapper}>
+                <Image
+                    style={styles.postImage}
+                    source={{ uri: post.image }}
+                />
+            </View>
+
+            <View style={styles.postDetails}>
+                <Text style={styles.postDetailsTitle}>
+                    { post.title }
+                </Text>
+
+                <Text style={styles.postDetailsText}>
+                    { post.text }
+                </Text>
+            </View>
+
+            <View style={styles.authorWrapper}>
+                <Text style={styles.authorName}>
+                    { post.author }
+                </Text>
+
+                <Text style={styles.createdDate}>
+                    { new Date(post.createdAt).toLocaleDateString() }
+                </Text>
+            </View>
+        </ScrollView>
+    );
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
@@ -45,34 +77,7 @@ export default function PostScreen({ route: { params: { postId } } }) {
                 Рецепт "{ headerTitle() }"
             </SimpleHeader>
 
-            <ScrollView>
-                <View style={styles.postImageWrapper}>
-                    <Image
-                        style={styles.postImage}
-                        source={{ uri: post.image }}
-                    />
-                </View>
-
-                <View style={styles.postDetails}>
-                    <Text style={styles.postDetailsTitle}>
-                        { post.title }
-                    </Text>
-
-                    <Text style={styles.postDetailsText}>
-                        { post.text }
-                    </Text>
-                </View>
-
-                <View style={styles.authorWrapper}>
-                    <Text style={styles.authorName}>
-                        { post.author }
-                    </Text>
-
-                    <Text style={styles.createdDate}>
-                        { new Date(post.createdAt).toLocaleDateString() }
-                    </Text>
-                </View>
-            </ScrollView>
+            { isLoading ? <SimpleLoader /> : postContent }
         </SafeAreaView>
     );
 }
