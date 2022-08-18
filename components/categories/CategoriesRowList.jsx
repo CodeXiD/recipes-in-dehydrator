@@ -14,9 +14,9 @@ export default function CategoriesRowList({ categories }) {
                 categories.map((category) => {
                     return (
                         <Pressable
-                            key={category.id}
+                            key={category._id}
                             style={styles.categoryItem}
-                            onPress={() => navigation.navigate('Category', { categoryId: category.id })}
+                            onPress={() => navigation.navigate('Category', { categoryId: category._id })}
                         >
                             <CategoryRowItem category={category} />
                         </Pressable>
