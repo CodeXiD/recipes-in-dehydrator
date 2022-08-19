@@ -4,10 +4,22 @@ import HomeScreen from "./HomeScreen";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import CategoryScreen from "./CategoryScreen";
 import PostScreen from "./PostScreen";
+import ProfileScreen from "./ProfileScreen";
+import FavoritesScreen from "./FavoritesScreen";
+import NotificationsScreen from "./NotificationsScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigation() {
+    const screens = [
+        { name: 'Home', component: HomeScreen },
+        { name: 'Category', component: CategoryScreen },
+        { name: 'Post', component: PostScreen },
+        { name: 'Profile', component: ProfileScreen },
+        { name: 'Favorites', component: FavoritesScreen },
+        { name: 'Notifications', component: NotificationsScreen },
+    ];
+
     return (
         <SafeAreaProvider>
             <NavigationContainer>
@@ -16,18 +28,15 @@ export default function Navigation() {
                         headerShown: false
                     }}
                 >
-                    <Stack.Screen
-                        name="Home"
-                        component={HomeScreen}
-                    />
-                    <Stack.Screen
-                        name="Category"
-                        component={CategoryScreen}
-                    />
-                    <Stack.Screen
-                        name="Post"
-                        component={PostScreen}
-                    />
+                    {
+                        screens.map(screen => (
+                            <Stack.Screen
+                                key={screen.name}
+                                name={screen.name}
+                                component={screen.component}
+                            />
+                        ))
+                    }
                 </Stack.Navigator>
             </NavigationContainer>
         </SafeAreaProvider>

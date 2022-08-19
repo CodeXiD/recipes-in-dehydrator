@@ -1,4 +1,4 @@
-import {View, StyleSheet, Pressable} from "react-native";
+import {View, StyleSheet, Pressable, TouchableOpacity} from "react-native";
 import PostColumnItem from "./PostColumnItem";
 import {Touchable} from "react-native-web";
 import {useNavigation} from "@react-navigation/native";
@@ -10,13 +10,14 @@ export default function PostColumnList({ posts }) {
         <View>
             {
                 posts.map(post => (
-                    <Pressable
+                    <TouchableOpacity
                         key={post.id}
                         style={styles.postBlock}
+                        activeOpacity={0.5}
                         onPress={() => navigation.navigate('Post', { postId: post.id })}
                     >
                         <PostColumnItem post={post} />
-                    </Pressable>
+                    </TouchableOpacity>
                 ))
             }
         </View>

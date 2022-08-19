@@ -1,10 +1,10 @@
-import {Image, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from "react-native-safe-area-context";
+import {ScrollView, StyleSheet} from 'react-native';
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import PostColumnList from "../components/posts/PostColumnList";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
+import MainLayout from "../layouts/MainLayout";
 
 // @ts-ignore
 export default function CategoryScreen({ route }) {
@@ -49,22 +49,17 @@ export default function CategoryScreen({ route }) {
     ) : null;
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
+        <MainLayout>
             <SimpleHeader>
                 {category ? `Категорія "${category.name}"` : 'Категорія'}
             </SimpleHeader>
 
             {isLoading ? <SimpleLoader /> : postsContent}
-        </SafeAreaView>
+        </MainLayout>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 14
-    },
     postListWrapper: {
       marginTop: 24,
     },

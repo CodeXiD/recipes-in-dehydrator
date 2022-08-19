@@ -1,6 +1,4 @@
-import {Button, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from "react-native-safe-area-context";
-import * as Notifications from 'expo-notifications';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import ProfileWelcome from "../components/user/ProfileWelcome";
 import CategoriesRowList from "../components/categories/CategoriesRowList";
 import PostColumnList from "../components/posts/PostColumnList";
@@ -8,6 +6,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
 import useApi from "../composables/useApi";
+import MainLayout from "../layouts/MainLayout";
 
 export default function HomeScreen() {
     const api = useApi();
@@ -65,9 +64,7 @@ export default function HomeScreen() {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-
+        <MainLayout>
             <ScrollView>
                 <View style={styles.profileBlock}>
                     <ProfileWelcome />
@@ -89,15 +86,11 @@ export default function HomeScreen() {
                     {isLoading ? <SimpleLoader /> : popularRecipesContent}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </MainLayout>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 14
-    },
     profileBlock: {
         marginBottom: 24,
     },

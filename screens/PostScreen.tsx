@@ -1,10 +1,9 @@
-import {Image, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
-import PostColumnList from "../components/posts/PostColumnList";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
+import MainLayout from "../layouts/MainLayout";
 
 // @ts-ignore
 export default function PostScreen({ route: { params: { postId } } }) {
@@ -28,12 +27,11 @@ export default function PostScreen({ route: { params: { postId } } }) {
 
     if(!post) {
         return (
-            <SafeAreaView style={styles.container}>
-                <StatusBar barStyle="dark-content" />
+            <MainLayout>
                 <SimpleHeader>
                     Завантаження рецепта
                 </SimpleHeader>
-            </SafeAreaView>
+            </MainLayout>
         )
     }
 
@@ -71,14 +69,13 @@ export default function PostScreen({ route: { params: { postId } } }) {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
+        <MainLayout>
             <SimpleHeader>
                 Рецепт "{ headerTitle() }"
             </SimpleHeader>
 
             { isLoading ? <SimpleLoader /> : postContent }
-        </SafeAreaView>
+        </MainLayout>
     );
 }
 
