@@ -46,6 +46,7 @@ export default function ProfileScreen() {
     const menuItemsContent = (groupItems: any[]) => {
         return groupItems.map((item, idx) => (
                     <TouchableOpacity
+                        key={idx}
                         style={[
                             styles.menuItem,
                             (idx+1) < groupItems.length ? { borderBottomColor: '#efefef', borderBottomWidth: 1, borderStyle: 'solid' } : {}
@@ -69,8 +70,8 @@ export default function ProfileScreen() {
     }
 
     const menuContent = () => {
-       return menu.map(groupItems => (
-                <View style={styles.menuGroup}>
+       return menu.map((groupItems, idx) => (
+                <View style={styles.menuGroup} key={idx}>
                     { menuItemsContent(groupItems) }
                 </View>
             ))
