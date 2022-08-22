@@ -1,11 +1,23 @@
 import {Image, Text, View, StyleSheet} from "react-native";
 
 export default function PostColumnItem({ post }) {
+    const tagsContent = (
+        <View style={styles.hashtags}>
+        {
+            post.tags.map((tag) => (
+                    <View style={styles.hashtagItem}>
+                        <Text style={styles.hashtagItemText}>#{tag}</Text>
+                    </View>
+            ))
+        }
+        </View>
+    );
+
     return (
         <View style={styles.postWrapper}>
             <Image
                 style={styles.postImage}
-                source={{ uri: post.image }}
+                source={{ uri: post.imageUrl }}
             />
 
             <View style={styles.postDetails}>
@@ -17,20 +29,10 @@ export default function PostColumnItem({ post }) {
                 </Text>
 
                 <Text style={styles.postAuthor}>
-                    { post.author }
+                    { post.author.fullName }
                 </Text>
 
-                <View style={styles.hashtags}>
-                    <View style={styles.hashtagItem}>
-                        <Text style={styles.hashtagItemText}>#chicken</Text>
-                    </View>
-                    <View style={styles.hashtagItem}>
-                        <Text style={styles.hashtagItemText}>#degidrator</Text>
-                    </View>
-                    <View style={styles.hashtagItem}>
-                        <Text style={styles.hashtagItemText}>#spicy</Text>
-                    </View>
-                </View>
+                { tagsContent }
             </View>
         </View>
     )

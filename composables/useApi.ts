@@ -1,11 +1,10 @@
 import axios from "axios";
+// @ts-ignore
+import { REACT_APP_API_URL } from '@env'
 
 export default function useApi() {
     const axiosInstance = axios.create({
-        baseURL: "https://recipes-b292.restdb.io/rest",
-        headers: {
-            'x-apikey': 'cfa0832360930a60969b991e572360b2321a6'
-        }
+        baseURL: REACT_APP_API_URL,
     });
 
     return axiosInstance;

@@ -5,14 +5,16 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
 import PostColumnList from "../components/posts/PostColumnList";
+import useApi from "../composables/useApi";
 
 export default function FavoritesScreen() {
+    const api = useApi();
     const [isLoading, setLoading] = useState(false);
     const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
     const fetchFavoriteRecipes = async () => {
         setLoading(true);
-        return axios.get('https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/posts')
+        return api.get('/posts')
             .then(({ data }) => {
                 setFavoriteRecipes(data);
             })

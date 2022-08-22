@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
     const fetchPopularRecipes = async () => {
         setLoading(true);
-        return axios.get('https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/posts')
+        return api.get('/posts')
             .then(({ data }) => {
                 setPopularRecipes(data);
             })

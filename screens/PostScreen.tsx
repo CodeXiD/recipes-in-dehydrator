@@ -4,15 +4,17 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
 import MainLayout from "../layouts/MainLayout";
+import useApi from "../composables/useApi";
 
 // @ts-ignore
 export default function PostScreen({ route: { params: { postId } } }) {
+    const api = useApi()
     const [isLoading, setLoading] = useState(false);
     const [post, setPost] = useState<null | any>(null)
 
     const fetchPost = async () => {
         setLoading(true);
-        return axios.get(`https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/posts/${postId}`)
+        return api.get(`/posts/${postId}`)
             .then(({ data }) => {
                 setPost(data);
             })
@@ -42,7 +44,7 @@ export default function PostScreen({ route: { params: { postId } } }) {
             <View style={styles.postImageWrapper}>
                 <Image
                     style={styles.postImage}
-                    source={{ uri: post.image }}
+                    source={{ uri: post.imageUrl }}
                 />
             </View>
 
@@ -58,7 +60,7 @@ export default function PostScreen({ route: { params: { postId } } }) {
 
             <View style={styles.authorWrapper}>
                 <Text style={styles.authorName}>
-                    { post.author }
+                    { post.author.fullName }
                 </Text>
 
                 <Text style={styles.createdDate}>

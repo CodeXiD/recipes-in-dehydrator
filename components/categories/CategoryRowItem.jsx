@@ -6,7 +6,7 @@ export default function CategoryRowItem({ category }) {
             <View style={styles.categoryIconWrapper}>
                 <Image
                     style={styles.categoryIconImage}
-                    source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2826/2826192.png' }}
+                    source={{ uri: category.imageUrl }}
                 />
             </View>
             <Text style={styles.categoryName}>{ category.name }</Text>
@@ -39,5 +39,6 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         fontWeight: '600',
+        textAlign: 'center'
     }
 })

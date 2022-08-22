@@ -1,20 +1,23 @@
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import PostColumnList from "../components/posts/PostColumnList";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
 import MainLayout from "../layouts/MainLayout";
+import useApi from "../composables/useApi";
+import EmptyNotification from "../components/UI/general/EmptyNotification";
 
 // @ts-ignore
 export default function CategoryScreen({ route }) {
+    const api = useApi();
     const [isLoading, setLoading] = useState(false);
     const [category, setCategory] = useState<null | any>(null)
     const [posts, setPosts] = useState([]);
 
     const fetchCategory = async () => {
         setLoading(true);
-        return axios.get(`https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/categories/${route.params.categoryId}`)
+        return api.get(`/categories/${route.params.categoryId}`)
             .then(({ data }) => {
                 setCategory(data);
             })
@@ -25,7 +28,7 @@ export default function CategoryScreen({ route }) {
 
     const fetchPosts = async () => {
         setLoading(true);
-        return axios.get('https://62fce4786e617f88dea06a4e.mockapi.io/api/v1/posts')
+        return api.get(`/categories/${route.params.categoryId}/posts`)
             .then(({ data }) => {
                 setPosts(data);
             })
@@ -40,9 +43,15 @@ export default function CategoryScreen({ route }) {
     useEffect(() => {
         fetchCategory()
             .then(fetchPosts)
-    }, [])
+    }, []);
 
-    const postsContent = posts.length ? (
+    const emptyPosts = !isLoading && posts && !posts.length ? (
+        <EmptyNotification>
+            Жодного рецепту щє не додано...
+        </EmptyNotification>
+    ) : null;
+
+    const postsContent = !isLoading && posts && posts.length ? (
         <ScrollView style={styles.postListWrapper}>
             <PostColumnList posts={posts} />
         </ScrollView>
@@ -53,8 +62,9 @@ export default function CategoryScreen({ route }) {
             <SimpleHeader>
                 {category ? `Категорія "${category.name}"` : 'Категорія'}
             </SimpleHeader>
-
-            {isLoading ? <SimpleLoader /> : postsContent}
+            { emptyPosts }
+            {isLoading && <SimpleLoader />}
+            { postsContent }
         </MainLayout>
     );
 }
@@ -62,5 +72,8 @@ export default function CategoryScreen({ route }) {
 const styles = StyleSheet.create({
     postListWrapper: {
       marginTop: 24,
+    },
+    emptyPostsBlock: {
+
     },
 });

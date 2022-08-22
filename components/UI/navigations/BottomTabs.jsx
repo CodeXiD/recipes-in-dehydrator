@@ -1,5 +1,5 @@
 import {View, StyleSheet, TouchableOpacity} from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
+import { AntDesign } from '@expo/vector-icons';
 import {useNavigation, useRoute} from "@react-navigation/native";
 
 export default function BottomTabs() {
@@ -32,9 +32,9 @@ export default function BottomTabs() {
     return (
         <View style={styles.tabsWrapper}>
             {
-                tabs.map(tab => (
+                tabs.map((tab, idx) => (
                     <TouchableOpacity
-                        key={tab.name}
+                        key={idx}
                         style={styles.tab}
                         activeOpacity={0.3}
                         onPress={() => navigation.navigate(tab.path)}

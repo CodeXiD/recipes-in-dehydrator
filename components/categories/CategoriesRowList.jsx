@@ -14,10 +14,10 @@ export default function CategoriesRowList({ categories }) {
                 categories.map((category) => {
                     return (
                         <TouchableOpacity
-                            key={category._id}
+                            key={category.id}
                             activeOpacity={0.5}
                             style={styles.categoryItem}
-                            onPress={() => navigation.navigate('Category', { categoryId: category._id })}
+                            onPress={() => navigation.navigate('Category', { categoryId: category.id })}
                         >
                             <CategoryRowItem category={category} />
                         </TouchableOpacity>
