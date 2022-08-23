@@ -5,7 +5,10 @@ export default function PostColumnItem({ post }) {
         <View style={styles.hashtags}>
         {
             post.tags.map((tag) => (
-                    <View style={styles.hashtagItem}>
+                    <View
+                        key={tag}
+                        style={styles.hashtagItem}
+                    >
                         <Text style={styles.hashtagItemText}>#{tag}</Text>
                     </View>
             ))

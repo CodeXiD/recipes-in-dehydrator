@@ -1,9 +1,53 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons, AntDesign, Octicons } from '@expo/vector-icons';
 import MainLayout from "../layouts/MainLayout";
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
+import useUser from "../composables/useUser";
+import {useNavigation} from "@react-navigation/native";
 
 export default function ProfileScreen() {
+    const navigation = useNavigation();
+    const user = useUser();
+
+    const guestMenu = [
+        [
+            {
+                IconComponent: Octicons,
+                icon: 'sign-in',
+                title: 'Авторизація',
+                size: 16,
+                path: 'Authorization',
+                additionalIconStyles:  { marginLeft: 4 },
+            },
+            {
+                IconComponent: AntDesign,
+                icon: 'adduser',
+                title: 'Реєстрація',
+                size: 20,
+                path: 'Registration',
+                additionalIconStyles:  { },
+            }
+        ],
+        [
+            {
+                IconComponent: Ionicons,
+                icon: 'md-help-circle-outline',
+                title: 'Допомога',
+                size: 22,
+                path: '',
+                additionalIconStyles:  { },
+            },
+            {
+                IconComponent: MaterialCommunityIcons,
+                icon: 'message-question-outline',
+                title: 'Питання щодо застосунку',
+                size: 18,
+                path: '',
+                additionalIconStyles:  { marginLeft: 1 },
+            }
+        ]
+    ]
+
     const menu = [
         [
             {
@@ -52,6 +96,7 @@ export default function ProfileScreen() {
                             (idx+1) < groupItems.length ? { borderBottomColor: '#efefef', borderBottomWidth: 1, borderStyle: 'solid' } : {}
                         ]}
                         activeOpacity={0.3}
+                        onPress={() => item.path && navigation.navigate(item.path)}
                     >
                         <View style={styles.menuItemImageWrapper}>
                             <item.IconComponent
@@ -69,12 +114,41 @@ export default function ProfileScreen() {
                 ))
     }
 
-    const menuContent = () => {
-       return menu.map((groupItems, idx) => (
+    const menuContent = (menuGroups: any[]) => {
+       return menuGroups.map((groupItems, idx) => (
                 <View style={styles.menuGroup} key={idx}>
                     { menuItemsContent(groupItems) }
                 </View>
             ))
+    }
+
+    if(!user.isLoggedIn) {
+        return (
+            <MainLayout>
+                <SimpleHeader withBackButton={false}>
+                    Профіль
+                </SimpleHeader>
+
+                <View style={styles.minifyProfileInformationContainer}>
+                    <View style={styles.avatar}>
+                        <AntDesign
+                            style={styles.avatarImage}
+                            name="user"
+                            size={75}
+                            color="gray"
+                        />
+                    </View>
+
+                    <View style={styles.minifyProfileInformation}>
+                        <Text style={styles.fullName}>Гість</Text>
+                    </View>
+                </View>
+
+                <View style={styles.menuContainer}>
+                    { menuContent(guestMenu) }
+                </View>
+            </MainLayout>
+        )
     }
 
     return (
@@ -84,10 +158,12 @@ export default function ProfileScreen() {
             </SimpleHeader>
 
             <View style={styles.minifyProfileInformationContainer}>
-                <Image
-                    style={styles.avatar}
-                    source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnZHkBJOOGkGDDX7EqF82DrhV72cnIJdCppA&usqp=CAU' }}
-                />
+                <View style={styles.avatar}>
+                    <Image
+                        style={styles.avatarImage}
+                        source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnZHkBJOOGkGDDX7EqF82DrhV72cnIJdCppA&usqp=CAU' }}
+                    />
+                </View>
 
                 <View style={styles.minifyProfileInformation}>
                     <Text style={styles.fullName}>Ткаченко Кирило</Text>
@@ -96,7 +172,7 @@ export default function ProfileScreen() {
             </View>
 
             <View style={styles.menuContainer}>
-                { menuContent() }
+                { menuContent(menu) }
             </View>
         </MainLayout>
     );
@@ -106,10 +182,17 @@ const styles = StyleSheet.create({
     minifyProfileInformationContainer: {
         alignItems: 'center'
     },
+    avatarImage: {
+        width: 75,
+        height: 75
+    },
     avatar: {
         width: 124,
         height: 124,
-        borderRadius: 124/2
+        borderRadius: 124/2,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     minifyProfileInformation: {
         alignItems: 'center',
@@ -153,5 +236,11 @@ const styles = StyleSheet.create({
     menuItemTitle: {
         fontSize: 15,
         fontWeight: '500',
+    },
+    guestActions: {
+        marginTop: 14
+    },
+    guestActionButton: {
+        marginBottom: 8
     }
 });

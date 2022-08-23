@@ -1,11 +1,20 @@
 import axios from "axios";
-// @ts-ignore
-import { REACT_APP_API_URL } from '@env'
+import Constants from 'expo-constants';
+import {useMemo} from "react";
+import useUser from "./useUser";
 
 export default function useApi() {
-    const axiosInstance = axios.create({
-        baseURL: REACT_APP_API_URL,
-    });
+    const user = useUser();
+    const axiosInstance = useMemo(() => {
+        console.log('### user.accessToken', user.accessToken)
+        return axios.create({
+            baseURL: Constants.manifest!.extra!.apiUrl,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': user.accessToken.current ? `Bearer ${user.accessToken.current}`: false,
+            },
+        });
+    }, [user.accessToken])
 
     return axiosInstance;
 }

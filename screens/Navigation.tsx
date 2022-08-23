@@ -7,6 +7,8 @@ import PostScreen from "./PostScreen";
 import ProfileScreen from "./ProfileScreen";
 import FavoritesScreen from "./FavoritesScreen";
 import NotificationsScreen from "./NotificationsScreen";
+import AuthorizationScreen from "./AuthorizationScreen";
+import RegistrationScreen from "./RegistrationScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,8 @@ export default function Navigation() {
         { name: 'Profile', component: ProfileScreen },
         { name: 'Favorites', component: FavoritesScreen },
         { name: 'Notifications', component: NotificationsScreen },
+        { name: 'Authorization', component: AuthorizationScreen },
+        { name: 'Registration', component: RegistrationScreen },
     ];
 
     return (
