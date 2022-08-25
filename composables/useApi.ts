@@ -1,20 +1,20 @@
 import axios from "axios";
 import Constants from 'expo-constants';
-import {useMemo} from "react";
-import useUser from "./useUser";
+import {useStore} from "react-redux";
+import {RootState} from "../store";
 
 export default function useApi() {
-    const user = useUser();
-    const axiosInstance = useMemo(() => {
-        console.log('### user.accessToken', user.accessToken)
+    const store = useStore();
+    return () => {
+        const state = store.getState() as RootState;
+        const accessToken = state.user.accessToken;
+
         return axios.create({
             baseURL: Constants.manifest!.extra!.apiUrl,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': user.accessToken.current ? `Bearer ${user.accessToken.current}`: false,
+                'Authorization': accessToken ? `Bearer ${accessToken}`: false,
             },
         });
-    }, [user.accessToken])
-
-    return axiosInstance;
+    }
 }

@@ -14,7 +14,7 @@ export default function PostScreen({ route: { params: { postId } } }) {
 
     const fetchPost = async () => {
         setLoading(true);
-        return api.get(`/posts/${postId}`)
+        return api().get(`/posts/${postId}`)
             .then(({ data }) => {
                 setPost(data);
             })

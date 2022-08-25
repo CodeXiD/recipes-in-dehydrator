@@ -32,6 +32,7 @@ export default function ProfileScreen() {
             {
                 IconComponent: Ionicons,
                 icon: 'md-help-circle-outline',
+                iconBgColor: '#68a4ce',
                 title: 'Допомога',
                 size: 22,
                 path: '',
@@ -40,6 +41,7 @@ export default function ProfileScreen() {
             {
                 IconComponent: MaterialCommunityIcons,
                 icon: 'message-question-outline',
+                iconBgColor: '#68a4ce',
                 title: 'Питання щодо застосунку',
                 size: 18,
                 path: '',
@@ -71,6 +73,7 @@ export default function ProfileScreen() {
             {
                 IconComponent: Ionicons,
                 icon: 'md-help-circle-outline',
+                iconBgColor: '#68a4ce',
                 title: 'Допомога',
                 size: 22,
                 path: '',
@@ -79,10 +82,22 @@ export default function ProfileScreen() {
             {
                 IconComponent: MaterialCommunityIcons,
                 icon: 'message-question-outline',
+                iconBgColor: '#68a4ce',
                 title: 'Питання щодо застосунку',
                 size: 18,
                 path: '',
                 additionalIconStyles:  { marginLeft: 1 },
+            }
+        ],
+        [
+            {
+                IconComponent: MaterialCommunityIcons,
+                icon: 'location-exit',
+                iconBgColor: '#ce6868',
+                title: 'Вийти з профілю',
+                size: 18,
+                path: 'LogOut',
+                additionalIconStyles:  { marginLeft: 2 },
             }
         ]
     ]
@@ -98,7 +113,7 @@ export default function ProfileScreen() {
                         activeOpacity={0.3}
                         onPress={() => item.path && navigation.navigate(item.path)}
                     >
-                        <View style={styles.menuItemImageWrapper}>
+                        <View style={[styles.menuItemImageWrapper, { backgroundColor: item.iconBgColor || '#2BC169' }]}>
                             <item.IconComponent
                                 name={item.icon}
                                 size={item.size}

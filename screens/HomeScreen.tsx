@@ -16,7 +16,7 @@ export default function HomeScreen() {
 
     const fetchCategories = async () => {
         setLoading(true);
-        return api.get('/categories')
+        return api().get('/categories')
             .then(({ data }) => {
                 setCategories(data);
             })
@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
     const fetchPopularRecipes = async () => {
         setLoading(true);
-        return api.get('/posts')
+        return api().get('/posts')
             .then(({ data }) => {
                 setPopularRecipes(data);
             })

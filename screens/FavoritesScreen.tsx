@@ -14,7 +14,7 @@ export default function FavoritesScreen() {
 
     const fetchFavoriteRecipes = async () => {
         setLoading(true);
-        return api.get('/posts')
+        return api().get('/posts')
             .then(({ data }) => {
                 setFavoriteRecipes(data);
             })

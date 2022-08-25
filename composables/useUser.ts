@@ -1,30 +1,40 @@
-import {useMemo, useRef, useState} from "react";
+import {useMemo} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import { setUserData as _setUserData, setAccessToken as _setAccessToken } from "../store/user/userSlice";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RootState} from "../store";
 
 export default function useUser() {
-    const accessToken = useRef<string>();
-    const userData = useRef();
+    const dispatch = useDispatch();
+    const userState = useSelector((state: RootState) => state.user);
 
-    const isLoggedIn = useMemo(() => accessToken.current && userData.current, [accessToken, userData])
+    const isLoggedIn = useMemo(() => userState.accessToken && userState.userData, [userState.accessToken, userState.userData])
 
-    const setAccessToken = (token: string) => {
-        accessToken.current = token;
-        if(!token) userData.current = undefined;
+    const setAccessToken = (token: string | null) => {
+        dispatch(_setAccessToken(token));
+        if(token) {
+            AsyncStorage.setItem('@user/accessToken', token);
+        } else {
+            AsyncStorage.removeItem('@user/accessToken');
+            dispatch(_setUserData(null));
+        }
     }
 
-    const setUserData = (user: any | undefined) => {
-        userData.current = user;
+    const setUserData = (user: any | null) => {
+        dispatch(_setUserData(user));
     }
 
     const clearAuth = () => {
-        accessToken.current = undefined;
-        userData.current = undefined;
+        AsyncStorage.removeItem('@user/accessToken');
+        dispatch(_setAccessToken(null));
+        dispatch(_setUserData(null));
     }
 
     return {
         isLoggedIn,
-        accessToken,
+        accessToken: userState.accessToken,
         setAccessToken,
-        userData,
+        userData: userState.userData,
         setUserData,
         clearAuth,
     }

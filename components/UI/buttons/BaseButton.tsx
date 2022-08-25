@@ -1,13 +1,13 @@
 import {Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 
-export default function BaseButton({ children = '', disabled = false, onPress = () => {} }) {
+export default function BaseButton({ children = '', disabled = false, buttonStyles = {}, onPress = () => {} }) {
     return (
         <TouchableOpacity
             activeOpacity={0.3}
             onPress={() => !disabled && onPress()}
         >
             <View
-                style={[styles.button, disabled && styles.disabled]}
+                style={[styles.button, buttonStyles, disabled && styles.disabled]}
             >
                 <Text style={styles.buttonText}>
                     { children }

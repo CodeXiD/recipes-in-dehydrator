@@ -17,7 +17,7 @@ export default function CategoryScreen({ route }) {
 
     const fetchCategory = async () => {
         setLoading(true);
-        return api.get(`/categories/${route.params.categoryId}`)
+        return api().get(`/categories/${route.params.categoryId}`)
             .then(({ data }) => {
                 setCategory(data);
             })
@@ -28,7 +28,7 @@ export default function CategoryScreen({ route }) {
 
     const fetchPosts = async () => {
         setLoading(true);
-        return api.get(`/categories/${route.params.categoryId}/posts`)
+        return api().get(`/categories/${route.params.categoryId}/posts`)
             .then(({ data }) => {
                 setPosts(data);
             })
