@@ -22,7 +22,7 @@ export default function ProfileScreen() {
             {
                 IconComponent: AntDesign,
                 icon: 'adduser',
-                title: 'Реєстрація',
+                title: 'Створити профіль',
                 size: 20,
                 path: 'Registration',
                 additionalIconStyles:  { },
@@ -176,13 +176,13 @@ export default function ProfileScreen() {
                 <View style={styles.avatar}>
                     <Image
                         style={styles.avatarImage}
-                        source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnZHkBJOOGkGDDX7EqF82DrhV72cnIJdCppA&usqp=CAU' }}
+                        source={{ uri: user.userData.avatarUrl  }}
                     />
                 </View>
 
                 <View style={styles.minifyProfileInformation}>
-                    <Text style={styles.fullName}>Ткаченко Кирило</Text>
-                    <Text style={styles.phone}>+380 50 109 9684</Text>
+                    <Text style={styles.fullName}>{ user.userData.fullName }</Text>
+                    <Text style={styles.phone}>{ user.userData.phone }</Text>
                 </View>
             </View>
 

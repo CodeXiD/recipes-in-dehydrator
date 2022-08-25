@@ -9,13 +9,14 @@ import useUser from "../composables/useUser";
 import {useNavigation} from "@react-navigation/native";
 import {useSelector, useStore} from "react-redux";
 import {RootState} from "../store";
+import Toast from "react-native-toast-message";
 
 export default function AuthorizationScreen() {
     const api = useApi();
     const user = useUser();
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(false);
-    const [form, setForm] = useState({ phone: '+38 (050) 109-96-32', password: '123456' });
+    const [form, setForm] = useState({ phone: '+38 (0', password: '' });
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const phoneMask = ['+', '3', '8', ' ', '(', '0', /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/];
     const { accessToken } = useSelector((state: RootState) => state.user);
@@ -41,6 +42,15 @@ export default function AuthorizationScreen() {
                 user.setUserData(data);
             })
             .then(() => {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Авторизація',
+                    text2: 'Ви успішно увійшли у свій профіль',
+                    visibilityTime: 6000,
+                    position: 'bottom',
+                    bottomOffset: 100
+                });
+
                 // @ts-ignore
                 return navigation.navigate('Profile');
             })

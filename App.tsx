@@ -6,6 +6,7 @@ import usePushNotifications from "./composables/usePushNotifications";
 import store from './store'
 import {Provider} from "react-redux";
 import SetupUser from "./components/hoc/SetupUser";
+import Toast from 'react-native-toast-message';
 
 export default function App() {
     const pushNotifications = usePushNotifications();
@@ -48,6 +49,7 @@ export default function App() {
         <Provider store={store}>
             <SetupUser>
                 <Navigation/>
+                <Toast />
             </SetupUser>
         </Provider>
     );
