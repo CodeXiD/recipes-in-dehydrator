@@ -7,9 +7,14 @@ import axios from "axios";
 import SimpleLoader from "../components/UI/general/SimpleLoader";
 import useApi from "../composables/useApi";
 import MainLayout from "../layouts/MainLayout";
+import BaseButton from "../components/UI/buttons/BaseButton";
+import useUser from "../composables/useUser";
+import {useNavigation} from "@react-navigation/native";
 
 export default function HomeScreen() {
     const api = useApi();
+    const user = useUser();
+    const navigation = useNavigation();
     const [isLoading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [popularRecipes, setPopularRecipes] = useState([]);
@@ -70,6 +75,24 @@ export default function HomeScreen() {
                     <ProfileWelcome />
                 </View>
 
+                <View style={styles.createPostButtonWrapper}>
+                    <BaseButton
+                        disabled={!user.isLoggedIn}
+                        onPress={() => navigation.navigate('CreatePost')}
+                    >
+                        Додати власний рецепт
+                    </BaseButton>
+                    { !user.isLoggedIn ? (
+                        <Text style={styles.createPostButtonHint}>
+                            Стане доступно після входу до профілю
+                        </Text>
+                    ): (
+                        <Text style={styles.createPostButtonHint}>
+                            Поділіться своїми рецептами з іншими користувачами
+                        </Text>
+                    ) }
+                </View>
+
                 <View style={styles.categoriesBlock}>
                     <Text style={styles.categoriesBlockTitle}>
                         Категорії
@@ -93,6 +116,17 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     profileBlock: {
         marginBottom: 24,
+    },
+    createPostButtonWrapper: {
+        marginBottom: 24,
+        backgroundColor: "#fff",
+        padding: 6,
+        borderRadius: 12,
+    },
+    createPostButtonHint: {
+        textAlign: 'center',
+        color: '#b7b7b7',
+        marginTop: 6,
     },
     categoriesBlock: {
         marginBottom: 24,

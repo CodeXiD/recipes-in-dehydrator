@@ -11,17 +11,19 @@ export default function BaseInput({
   editable = true,
   secureTextEntry = false,
   mask = undefined,
+  inputStyle = {},
   onChangeValue = () => {}
 }: {
-    label: string,
-    value: string,
-    placeholder: string,
-    keyboardType: KeyboardTypeOptions,
-    multiline: boolean,
-    editable: boolean,
-    secureTextEntry: boolean,
-    mask: Mask | undefined,
-    onChangeValue: ((text: string) => void) | undefined,
+    label?: string,
+    value?: string,
+    placeholder?: string,
+    keyboardType?: KeyboardTypeOptions,
+    multiline?: boolean,
+    editable?: boolean,
+    secureTextEntry?: boolean,
+    mask?: Mask | undefined,
+    inputStyle?: {} | undefined,
+    onChangeValue?: ((text: string) => void) | undefined,
 }) {
     const InputComponent = mask ? MaskedInput : TextInput;
 
@@ -29,7 +31,7 @@ export default function BaseInput({
         <View>
             <Text style={styles.label}>{ label }</Text>
             <InputComponent
-                style={styles.input}
+                style={[styles.input, inputStyle]}
                 value={value}
                 placeholder={placeholder}
                 keyboardType={keyboardType}
