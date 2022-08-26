@@ -1,24 +1,36 @@
-import {StyleSheet, Text, View} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View, Image} from "react-native";
 import SimpleHeader from "../components/UI/navigations/SimpleHeader";
 import MainLayout from "../layouts/MainLayout";
 import BaseInput from "../components/UI/inputs/BaseInput";
 import BaseButton from "../components/UI/buttons/BaseButton";
 import useApi from "../composables/useApi";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import useUser from "../composables/useUser";
 import {useNavigation} from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import TagsInput from "../components/UI/inputs/TagsInput";
+import * as ImagePicker from 'expo-image-picker';
+import BaseSelect from "../components/UI/selects/BaseSelect";
+
+type Form = {
+    title: string,
+    text: string,
+    imageUrl: string,
+    category: string | null,
+    tags: string[]
+}
 
 export default function CreatePostScreen() {
     const api = useApi();
     const user = useUser();
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(false);
-    const [form, setForm] = useState({
+    const [categories, setCategories] = useState([])
+    const [form, setForm] = useState<Form>({
         title: '',
         text: '',
         imageUrl: 'https://spoiledhounds.com/wp-content/uploads/2021/06/Dehydrated-Chicken-Jerky-Dogs-Recipe-Photo.jpg',
-        category: '62ff868fde1c516b6fc8785a',
+        category: null,
         tags: ["chicken", "degidrator", "spicy"]
     });
 
@@ -50,9 +62,39 @@ export default function CreatePostScreen() {
             })
     }
 
+    const fetchCategories = () => {
+        setIsLoading(true)
+        api().get('/categories')
+            .then(({ data }) => {
+                setCategories(data);
+            })
+            .finally(() => {
+                setIsLoading(false)
+            })
+    }
+
+    useEffect(() => {
+        fetchCategories();
+    }, [])
+
     const isValidForm = useMemo(() => {
         return form.title.length >= 6 && form.text.length >= 10;
     }, [form.title, form.text]);
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.cancelled) {
+            setForm({ ...form, imageUrl: result.uri });
+        }
+    };
 
     const errorMessageContent = errorMessage ? (
         <View style={styles.errorMessage}>
@@ -68,10 +110,21 @@ export default function CreatePostScreen() {
                 Додавання рецепту
             </SimpleHeader>
 
-            <View style={styles.formWrapper}>
+            <ScrollView style={styles.formWrapper}>
                 {errorMessageContent}
 
                 <View style={styles.form}>
+                    <View style={styles.formField}>
+                        {form.imageUrl && <Image source={{ uri: form.imageUrl }} style={styles.postImage} />}
+
+                        <BaseButton
+                            onPress={pickImage}
+                            buttonStyles={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                        >
+                            Обрати зображення рецепту
+                        </BaseButton>
+                    </View>
+
                     <View style={styles.formField}>
                         <BaseInput
                             label="Назва"
@@ -101,7 +154,27 @@ export default function CreatePostScreen() {
                             secureTextEntry={false}
                             placeholder="Опишіть у подробицях рецепт..."
                             mask={undefined}
-                            inputStyle={{ height: 60 }}
+                            inputStyle={{ height: 100 }}
+                        />
+                    </View>
+
+                    <BaseSelect
+                        value={form.category}
+                        label='Категорія'
+                        onValueChange={(itemValue: string) =>
+                            setForm({...form, category: itemValue,})
+                        }
+                        items={categories.map((c: { name: string, id: string }) => ({ label: c.name, value: c.id }))}
+                    />
+
+                    <View style={styles.formField}>
+                        <TagsInput
+                            label='Хештеги'
+                            tags={form.tags}
+                            placeholder="Наприклад: курка/свинина/гостре"
+                            onChangeTags={(tags: string[]) => {
+                                setForm({...form, tags})
+                            }}
                         />
                     </View>
 
@@ -114,14 +187,13 @@ export default function CreatePostScreen() {
                         </BaseButton>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         </MainLayout>
     )
 }
 
 const styles = StyleSheet.create({
     formWrapper: {
-        flex: 1,
         paddingTop: 30,
     },
     form: {},
@@ -136,6 +208,20 @@ const styles = StyleSheet.create({
     },
     formField: {
         marginBottom: 12,
+    },
+    postImage: {
+      width: '100%',
+      height: 240,
+      borderRadius: 12,
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+    },
+    tag: {
+      backgroundColor: '#fff',
+      padding: 4,
+      borderRadius: 4,
+      fontSize: 12,
+      marginRight: 4,
     },
     actions: {
         marginTop: 14

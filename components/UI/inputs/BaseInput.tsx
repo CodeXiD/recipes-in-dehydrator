@@ -1,4 +1,4 @@
-import {StyleSheet, TextInput, View, Text} from "react-native";
+import {StyleSheet, TextInput, View, Text, NativeSyntheticEvent, TextInputSubmitEditingEventData} from "react-native";
 import { KeyboardTypeOptions } from "react-native";
 import MaskedInput, {Mask} from "react-native-mask-input";
 
@@ -12,7 +12,8 @@ export default function BaseInput({
   secureTextEntry = false,
   mask = undefined,
   inputStyle = {},
-  onChangeValue = () => {}
+  onChangeValue = () => {},
+  onSubmitEditing = () => {}
 }: {
     label?: string,
     value?: string,
@@ -24,6 +25,7 @@ export default function BaseInput({
     mask?: Mask | undefined,
     inputStyle?: {} | undefined,
     onChangeValue?: ((text: string) => void) | undefined,
+    onSubmitEditing?: ((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void) | undefined,
 }) {
     const InputComponent = mask ? MaskedInput : TextInput;
 
@@ -40,6 +42,7 @@ export default function BaseInput({
                 secureTextEntry={secureTextEntry}
                 mask={mask}
                 onChangeText={onChangeValue}
+                onSubmitEditing={onSubmitEditing}
             />
         </View>
     )

@@ -23,6 +23,12 @@
             "./local/assets/notification-sound-other.wav"
           ]
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Надайте $(PRODUCT_NAME) доступ до ваших фотографій"
+        }
       ]
     ],
     "updates": {
