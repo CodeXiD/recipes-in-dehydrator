@@ -1,1 +1,5 @@
-export const SET_USER_DATA = 'SET_USER_DATA';
+const SET_USER_DATA = 'SET_USER_DATA';
+
+export default {
+  SET_USER_DATA,
+};
