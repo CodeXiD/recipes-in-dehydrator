@@ -1,8 +1,17 @@
-import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import SimpleHeader from '../components/UI/navigations/SimpleHeader';
 import MainLayout from '../layouts/MainLayout';
 import BaseInput from '../components/UI/inputs/BaseInput';
@@ -10,11 +19,10 @@ import BaseButton from '../components/UI/buttons/BaseButton';
 import useApi from '../composables/useApi';
 import TagsInput from '../components/UI/inputs/TagsInput';
 import BaseSelect from '../components/UI/selects/BaseSelect';
+import useUploadFile from '../composables/useUploadFile';
 
 const styles = StyleSheet.create({
-  formWrapper: {
-    paddingTop: 30,
-  },
+  formWrapper: {},
   form: {},
   errorMessage: {
     backgroundColor: '#eccdcd',
@@ -28,7 +36,18 @@ const styles = StyleSheet.create({
   formField: {
     marginBottom: 12,
   },
+  postImageEmptyWrapper: {
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  postImageEmptyText: {
+    marginTop: 8,
+    color: '#939393',
+  },
   postImage: {
+    backgroundColor: '#fff',
     width: '100%',
     height: 240,
     borderRadius: 12,
@@ -50,7 +69,7 @@ const styles = StyleSheet.create({
 type Form = {
   title: string;
   text: string;
-  imageUrl: string;
+  imageFile: any | null;
   category: string | null;
   tags: string[];
 };
@@ -58,15 +77,16 @@ type Form = {
 export default function CreatePostScreen() {
   const api = useApi();
   const navigation = useNavigation();
+  const uploadFile = useUploadFile();
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState<Form>({
     title: '',
     text: '',
-    imageUrl:
-      'https://spoiledhounds.com/wp-content/uploads/2021/06/Dehydrated-Chicken-Jerky-Dogs-Recipe-Photo.jpg',
+    imageFile: null,
     category: null,
-    tags: ['chicken', 'degidrator', 'spicy'],
+    tags: [],
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -118,8 +138,14 @@ export default function CreatePostScreen() {
   }, []);
 
   const isValidForm = useMemo(() => {
-    return form.title.length >= 6 && form.text.length >= 10;
-  }, [form.title, form.text]);
+    return (
+      form.title.length >= 6 &&
+      form.text.length >= 10 &&
+      form.imageFile &&
+      form.category &&
+      form.tags.length >= 1
+    );
+  }, [form.title, form.text, form.imageFile, form.category, form.tags]);
 
   const pickImage = async (): Promise<any> => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -127,10 +153,40 @@ export default function CreatePostScreen() {
       allowsEditing: true,
       aspect: [4, 4],
       quality: 1,
+      base64: true,
     });
 
     if (!result.cancelled) {
-      setForm({ ...form, imageUrl: result.uri });
+      try {
+        const fileName = result.uri.split('/').pop();
+
+        if (fileName) {
+          const match = /\.(\w+)$/.exec(fileName);
+          const type = match ? `image/${match[1]}` : `image`;
+
+          const { imageFile: oldImageFile } = form;
+          setForm({ ...form, imageFile: null });
+          setIsUploadingImage(true);
+          uploadFile
+            .upload(result.uri, fileName, type)
+            .then(({ data: imageFile }) => {
+              setForm({ ...form, imageFile });
+              if (oldImageFile) {
+                uploadFile.remove(oldImageFile.id);
+              }
+            })
+            .catch(err => {
+              if (oldImageFile) {
+                setForm({ ...form, imageFile: oldImageFile });
+              }
+            })
+            .finally(() => {
+              setIsUploadingImage(false);
+            });
+        }
+      } catch {
+        setIsUploadingImage(false);
+      }
     }
   };
 
@@ -149,12 +205,34 @@ export default function CreatePostScreen() {
 
         <View style={styles.form}>
           <View style={styles.formField}>
-            {form.imageUrl && (
-              <Image source={{ uri: form.imageUrl }} style={styles.postImage} />
+            {form.imageFile ? (
+              <Image
+                source={{ uri: form.imageFile.downloadUrl }}
+                style={styles.postImage}
+              />
+            ) : (
+              <View style={[styles.postImage, styles.postImageEmptyWrapper]}>
+                {isUploadingImage ? (
+                  <>
+                    <Entypo name="upload-to-cloud" size={80} color="#2BC169" />
+                    <Text style={styles.postImageEmptyText}>
+                      Завантаження зображення...
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <AntDesign name="scan1" size={80} color="#939393" />
+                    <Text style={styles.postImageEmptyText}>
+                      Зображення не обрано
+                    </Text>
+                  </>
+                )}
+              </View>
             )}
 
             <BaseButton
               onPress={pickImage as never}
+              disabled={isUploadingImage}
               buttonStyles={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
             >
               Обрати зображення рецепту
@@ -206,19 +284,27 @@ export default function CreatePostScreen() {
             }))}
           />
 
-          <View style={styles.formField}>
-            <TagsInput
-              label="Хештеги"
-              tags={form.tags}
-              placeholder="Наприклад: курка/свинина/гостре"
-              onChangeTags={(tags: string[]) => {
-                setForm({ ...form, tags });
-              }}
-            />
-          </View>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <View style={styles.formField}>
+              <TagsInput
+                label="Хештеги"
+                tags={form.tags}
+                placeholder="Наприклад: курка/свинина/гостре"
+                onChangeTags={(tags: string[]) => {
+                  setForm({ ...form, tags });
+                }}
+              />
+            </View>
+          </KeyboardAvoidingView>
 
           <View style={styles.actions}>
-            <BaseButton disabled={!isValidForm || isLoading} onPress={create}>
+            <BaseButton
+              disabled={!isValidForm || isLoading || isUploadingImage}
+              onPress={create}
+            >
               Додати рецепт
             </BaseButton>
           </View>

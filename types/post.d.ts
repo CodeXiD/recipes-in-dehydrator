@@ -2,7 +2,7 @@ import { User } from './user';
 
 export type Post = {
   id: string;
-  imageUrl: string;
+  imageFile: any;
   title: string;
   text: string;
   tags: string[];

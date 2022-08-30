@@ -1,4 +1,5 @@
 import { Image, Text, View, StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 import { Post } from '../../types/post';
 
 const styles = StyleSheet.create({
@@ -57,7 +58,12 @@ export default function PostColumnItem({ post }: { post: Post }) {
 
   return (
     <View style={styles.postWrapper}>
-      <Image style={styles.postImage} source={{ uri: post.imageUrl }} />
+      <Image
+        style={styles.postImage}
+        source={{
+          uri: post.imageFile.downloadUrl,
+        }}
+      />
 
       <View style={styles.postDetails}>
         <Text style={styles.postTitle} numberOfLines={1}>

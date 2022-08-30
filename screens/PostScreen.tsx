@@ -68,7 +68,9 @@ export default function PostScreen({
     };
 
     fetchPost();
-  }, [api, postId]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!post) {
     return (
@@ -84,7 +86,10 @@ export default function PostScreen({
   const postContent = (
     <ScrollView>
       <View style={styles.postImageWrapper}>
-        <Image style={styles.postImage} source={{ uri: post.imageUrl }} />
+        <Image
+          style={styles.postImage}
+          source={{ uri: post.imageFile.downloadUrl }}
+        />
       </View>
 
       <View style={styles.postDetails}>

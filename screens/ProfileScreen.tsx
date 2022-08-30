@@ -173,50 +173,53 @@ export default function ProfileScreen() {
   ];
 
   const menuItemsContent = (groupItems: any[]) => {
-    const randomNumber = Math.floor(Math.random() * 1000);
-
-    return groupItems.map((item, idx) => (
-      <TouchableOpacity
-        key={randomNumber}
-        style={[
-          styles.menuItem,
-          idx + 1 < groupItems.length
-            ? {
-                borderBottomColor: '#efefef',
-                borderBottomWidth: 1,
-                borderStyle: 'solid',
-              }
-            : {},
-        ]}
-        activeOpacity={0.3}
-        onPress={() => item.path && navigation.navigate(item.path)}
-      >
-        <View
+    return groupItems.map((item, idx) => {
+      const randomNumber = Math.floor(Math.random() * 1000);
+      return (
+        <TouchableOpacity
+          key={randomNumber}
           style={[
-            styles.menuItemImageWrapper,
-            { backgroundColor: item.iconBgColor || '#2BC169' },
+            styles.menuItem,
+            idx + 1 < groupItems.length
+              ? {
+                  borderBottomColor: '#efefef',
+                  borderBottomWidth: 1,
+                  borderStyle: 'solid',
+                }
+              : {},
           ]}
+          activeOpacity={0.3}
+          onPress={() => item.path && navigation.navigate(item.path)}
         >
-          <item.IconComponent
-            name={item.icon}
-            size={item.size}
-            color="#fff"
-            style={[styles.menuItemImage, item.additionalIconStyles]}
-          />
-        </View>
+          <View
+            style={[
+              styles.menuItemImageWrapper,
+              { backgroundColor: item.iconBgColor || '#2BC169' },
+            ]}
+          >
+            <item.IconComponent
+              name={item.icon}
+              size={item.size}
+              color="#fff"
+              style={[styles.menuItemImage, item.additionalIconStyles]}
+            />
+          </View>
 
-        <Text style={styles.menuItemTitle}>{item.title}</Text>
-      </TouchableOpacity>
-    ));
+          <Text style={styles.menuItemTitle}>{item.title}</Text>
+        </TouchableOpacity>
+      );
+    });
   };
 
   const menuContent = (menuGroups: any[]) => {
-    const randomNumber = Math.floor(Math.random() * 1000);
-    return menuGroups.map(groupItems => (
-      <View style={styles.menuGroup} key={randomNumber}>
-        {menuItemsContent(groupItems)}
-      </View>
-    ));
+    return menuGroups.map(groupItems => {
+      const randomNumber = Math.floor(Math.random() * 1000);
+      return (
+        <View style={styles.menuGroup} key={randomNumber}>
+          {menuItemsContent(groupItems)}
+        </View>
+      );
+    });
   };
 
   if (!user.isLoggedIn) {
