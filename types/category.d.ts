@@ -1,5 +1,5 @@
 export type Category = {
   id: string;
-  imageUrl: string;
+  imageFile: any;
   name: string;
 };

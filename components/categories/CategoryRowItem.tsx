@@ -36,7 +36,7 @@ export default function CategoryRowItem({ category }: { category: Category }) {
       <View style={styles.categoryIconWrapper}>
         <Image
           style={styles.categoryIconImage}
-          source={{ uri: category.imageUrl }}
+          source={{ uri: category.imageFile.downloadUrl }}
         />
       </View>
       <Text style={styles.categoryName}>{category.name}</Text>

@@ -4,6 +4,7 @@ import {
   Ionicons,
   AntDesign,
   Octicons,
+  FontAwesome5,
 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import MainLayout from '../layouts/MainLayout';
@@ -253,10 +254,14 @@ export default function ProfileScreen() {
 
       <View style={styles.minifyProfileInformationContainer}>
         <View style={styles.avatar}>
-          <Image
-            style={styles.avatarImage}
-            source={{ uri: user.userData.avatarUrl }}
-          />
+          {user.userData.avatarFile ? (
+            <Image
+              style={styles.avatarImage}
+              source={{ uri: user.userData.avatarFile.downloadUrl }}
+            />
+          ) : (
+            <FontAwesome5 name="user-circle" size={100} color="#2BC169" />
+          )}
         </View>
 
         <View style={styles.minifyProfileInformation}>
