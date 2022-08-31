@@ -4,14 +4,14 @@ import {
   Text,
   View,
   Image,
-  KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign, Entypo } from '@expo/vector-icons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SimpleHeader from '../components/UI/navigations/SimpleHeader';
 import MainLayout from '../layouts/MainLayout';
 import BaseInput from '../components/UI/inputs/BaseInput';
@@ -78,6 +78,7 @@ export default function CreatePostScreen() {
   const api = useApi();
   const navigation = useNavigation();
   const uploadFile = useUploadFile();
+  const scrollRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -96,7 +97,7 @@ export default function CreatePostScreen() {
     setErrorMessage(null);
 
     api()
-      .post('/posts', form)
+      .post('/posts', { ...form, imageFile: form.imageFile.id })
       .then(({ data }) => {
         Toast.show({
           type: 'success',
@@ -113,6 +114,12 @@ export default function CreatePostScreen() {
       })
       .catch(({ response }) => {
         setErrorMessage(response.data.message);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        scrollRef.current?.scrollTo({
+          y: 0,
+          animated: true,
+        });
       })
       .finally(() => {
         setIsLoading(false);
@@ -152,8 +159,7 @@ export default function CreatePostScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
-      quality: 1,
-      base64: true,
+      quality: 0.3,
     });
 
     if (!result.cancelled) {
@@ -200,94 +206,98 @@ export default function CreatePostScreen() {
     <MainLayout>
       <SimpleHeader>Додавання рецепту</SimpleHeader>
 
-      <ScrollView style={styles.formWrapper}>
-        {errorMessageContent}
+      <ScrollView ref={scrollRef} style={styles.formWrapper}>
+        <KeyboardAwareScrollView>
+          {errorMessageContent}
 
-        <View style={styles.form}>
-          <View style={styles.formField}>
-            {form.imageFile ? (
-              <Image
-                source={{ uri: form.imageFile.downloadUrl }}
-                style={styles.postImage}
+          <View style={styles.form}>
+            <View style={styles.formField}>
+              {form.imageFile ? (
+                <Image
+                  source={{ uri: form.imageFile.downloadUrl }}
+                  style={styles.postImage}
+                />
+              ) : (
+                <View style={[styles.postImage, styles.postImageEmptyWrapper]}>
+                  {isUploadingImage ? (
+                    <>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={80}
+                        color="#2BC169"
+                      />
+                      <Text style={styles.postImageEmptyText}>
+                        Завантаження зображення...
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <AntDesign name="scan1" size={80} color="#939393" />
+                      <Text style={styles.postImageEmptyText}>
+                        Зображення не обрано
+                      </Text>
+                    </>
+                  )}
+                </View>
+              )}
+
+              <BaseButton
+                onPress={pickImage as never}
+                disabled={isUploadingImage}
+                buttonStyles={{
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0,
+                }}
+              >
+                Обрати зображення рецепту
+              </BaseButton>
+            </View>
+
+            <View style={styles.formField}>
+              <BaseInput
+                label="Назва"
+                value={form.title}
+                onChangeValue={value => {
+                  setForm({ ...form, title: value });
+                }}
+                editable
+                keyboardType="default"
+                multiline={false}
+                secureTextEntry={false}
+                placeholder="Курячі джерки у соусі тереякі"
+                mask={undefined}
               />
-            ) : (
-              <View style={[styles.postImage, styles.postImageEmptyWrapper]}>
-                {isUploadingImage ? (
-                  <>
-                    <Entypo name="upload-to-cloud" size={80} color="#2BC169" />
-                    <Text style={styles.postImageEmptyText}>
-                      Завантаження зображення...
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <AntDesign name="scan1" size={80} color="#939393" />
-                    <Text style={styles.postImageEmptyText}>
-                      Зображення не обрано
-                    </Text>
-                  </>
-                )}
-              </View>
-            )}
+            </View>
 
-            <BaseButton
-              onPress={pickImage as never}
-              disabled={isUploadingImage}
-              buttonStyles={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-            >
-              Обрати зображення рецепту
-            </BaseButton>
-          </View>
+            <View style={styles.formField}>
+              <BaseInput
+                label="Текст рецепту"
+                value={form.text}
+                onChangeValue={value => {
+                  setForm({ ...form, text: value });
+                }}
+                editable
+                keyboardType="default"
+                multiline
+                secureTextEntry={false}
+                placeholder="Опишіть у подробицях рецепт..."
+                mask={undefined}
+                inputStyle={{ height: 100 }}
+              />
+            </View>
 
-          <View style={styles.formField}>
-            <BaseInput
-              label="Назва"
-              value={form.title}
-              onChangeValue={value => {
-                setForm({ ...form, title: value });
-              }}
-              editable
-              keyboardType="default"
-              multiline={false}
-              secureTextEntry={false}
-              placeholder="Курячі джерки у соусі тереякі"
-              mask={undefined}
+            <BaseSelect
+              value={form.category}
+              label="Категорія"
+              onValueChange={(itemValue: string) =>
+                setForm({ ...form, category: itemValue })
+              }
+              items={categories.map((c: { name: string; id: string }) => ({
+                label: c.name,
+                value: c.id,
+              }))}
             />
-          </View>
 
-          <View style={styles.formField}>
-            <BaseInput
-              label="Текст рецепту"
-              value={form.text}
-              onChangeValue={value => {
-                setForm({ ...form, text: value });
-              }}
-              editable
-              keyboardType="default"
-              multiline
-              secureTextEntry={false}
-              placeholder="Опишіть у подробицях рецепт..."
-              mask={undefined}
-              inputStyle={{ height: 100 }}
-            />
-          </View>
-
-          <BaseSelect
-            value={form.category}
-            label="Категорія"
-            onValueChange={(itemValue: string) =>
-              setForm({ ...form, category: itemValue })
-            }
-            items={categories.map((c: { name: string; id: string }) => ({
-              label: c.name,
-              value: c.id,
-            }))}
-          />
-
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
             <View style={styles.formField}>
               <TagsInput
                 label="Хештеги"
@@ -298,17 +308,17 @@ export default function CreatePostScreen() {
                 }}
               />
             </View>
-          </KeyboardAvoidingView>
 
-          <View style={styles.actions}>
-            <BaseButton
-              disabled={!isValidForm || isLoading || isUploadingImage}
-              onPress={create}
-            >
-              Додати рецепт
-            </BaseButton>
+            <View style={styles.actions}>
+              <BaseButton
+                disabled={!isValidForm || isLoading || isUploadingImage}
+                onPress={create}
+              >
+                Додати рецепт
+              </BaseButton>
+            </View>
           </View>
-        </View>
+        </KeyboardAwareScrollView>
       </ScrollView>
     </MainLayout>
   );
