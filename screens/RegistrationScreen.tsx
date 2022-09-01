@@ -1,12 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import SimpleHeader from '../components/UI/navigations/SimpleHeader';
 import MainLayout from '../layouts/MainLayout';
-import BaseInput from '../components/UI/inputs/BaseInput';
 import BaseButton from '../components/UI/buttons/BaseButton';
+import BaseInput from '../components/UI/inputs/BaseInput';
 import useApi from '../composables/useApi';
+import useUser from '../composables/useUser';
 
 const styles = StyleSheet.create({
   formWrapper: {
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
 
 export default function RegistrationScreen() {
   const api = useApi();
+  const user = useUser();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({
@@ -40,7 +42,6 @@ export default function RegistrationScreen() {
     phone: '+38 (0',
     password: '',
   });
-
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const phoneMask = [
     '+',
@@ -74,21 +75,20 @@ export default function RegistrationScreen() {
         phone: `+${form.phone.replace(/[^0-9.]/g, '')}`,
       })
       .then(() => {
+        return navigation.navigate('Authorization' as never);
+      })
+      .then(() => {
         Toast.show({
           type: 'success',
           text1: 'Реєстрація',
-          text2: 'Ви успішно зарєструвались, увійдіть у свій профіль',
+          text2: 'Ви успішно створили профіль, авторизуйтесь',
           visibilityTime: 6000,
           position: 'bottom',
           bottomOffset: 100,
         });
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return navigation.navigate('Authorization');
       })
-      .catch(({ response }) => {
-        setErrorMessage(response.data.message);
+      .catch(() => {
+        setErrorMessage('Можливо такой номер вже був вказанний');
       })
       .finally(() => {
         setIsLoading(false);
@@ -111,25 +111,19 @@ export default function RegistrationScreen() {
 
   return (
     <MainLayout>
-      <SimpleHeader>Реєстрація</SimpleHeader>
-
+      <SimpleHeader>Створення профілю</SimpleHeader>
       <View style={styles.formWrapper}>
         {errorMessageContent}
 
         <View style={styles.form}>
           <View style={styles.formField}>
             <BaseInput
-              label="І'мя"
+              label="ПІБ"
               value={form.fullName}
               onChangeValue={value => {
                 setForm({ ...form, fullName: value });
               }}
-              editable
-              keyboardType="default"
-              multiline={false}
-              secureTextEntry={false}
-              placeholder="Іванов Іван"
-              mask={undefined}
+              placeholder="Іванов Іван Іванович"
             />
           </View>
 
@@ -140,10 +134,6 @@ export default function RegistrationScreen() {
               onChangeValue={value => {
                 setForm({ ...form, phone: value });
               }}
-              editable
-              keyboardType="default"
-              multiline={false}
-              secureTextEntry={false}
               placeholder="+38 (050) 123-45-67"
               mask={phoneMask}
             />
@@ -156,18 +146,13 @@ export default function RegistrationScreen() {
               onChangeValue={value => {
                 setForm({ ...form, password: value });
               }}
-              editable
-              keyboardType="default"
-              multiline={false}
               secureTextEntry
-              placeholder=""
-              mask={undefined}
             />
           </View>
 
           <View style={styles.actions}>
             <BaseButton disabled={!isValidForm || isLoading} onPress={register}>
-              Створити профіль
+              Створити профиль
             </BaseButton>
           </View>
         </View>
