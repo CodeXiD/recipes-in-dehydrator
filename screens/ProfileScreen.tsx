@@ -1,15 +1,27 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import {
   MaterialCommunityIcons,
   Ionicons,
   AntDesign,
   Octicons,
   FontAwesome5,
+  Entypo,
 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
 import MainLayout from '../layouts/MainLayout';
 import SimpleHeader from '../components/UI/navigations/SimpleHeader';
 import useUser from '../composables/useUser';
+import useUploadFile from '../composables/useUploadFile';
+import useApi from '../composables/useApi';
 
 const styles = StyleSheet.create({
   minifyProfileInformationContainer: {
@@ -20,12 +32,31 @@ const styles = StyleSheet.create({
     height: 75,
   },
   avatar: {
+    position: 'relative',
     width: 124,
     height: 124,
     borderRadius: 124 / 2,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarChangeBlock: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingVertical: 6,
+    paddingBottom: 10,
+  },
+  avatarChangeBlockText: {
+    textAlign: 'center',
+    flex: 1,
+    fontWeight: '600',
+    color: '#fff',
+    flexDirection: 'column',
   },
   minifyProfileInformation: {
     alignItems: 'center',
@@ -79,6 +110,58 @@ const styles = StyleSheet.create({
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const user = useUser();
+  const api = useApi();
+  const uploadFile = useUploadFile();
+
+  const pickNewAvatar = async (): Promise<any> => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 0.3,
+    });
+
+    if (!result.cancelled) {
+      const fileName = result.uri.split('/').pop();
+
+      if (fileName) {
+        const match = /\.(\w+)$/.exec(fileName);
+        const type = match ? `image/${match[1]}` : `image`;
+
+        uploadFile
+          .upload(result.uri, fileName, type)
+          .then(({ data: { id } }) => {
+            return api().post('/users/profile', {
+              avatarFile: id,
+            });
+          })
+          .then(() => {
+            return api().get('/auth/profile');
+          })
+          .then(({ data }) => {
+            user.setUserData(data);
+            Toast.show({
+              type: 'success',
+              text1: 'Зміна аватару',
+              text2: 'Ви успішно змінили аватар',
+              visibilityTime: 6000,
+              position: 'bottom',
+              bottomOffset: 100,
+            });
+          })
+          .catch(() => {
+            Toast.show({
+              type: 'error',
+              text1: 'Зміна аватару',
+              text2: 'Під час зміни аватару сталася помилка, спробуйте пізніше',
+              visibilityTime: 6000,
+              position: 'bottom',
+              bottomOffset: 100,
+            });
+          });
+      }
+    }
+  };
 
   const guestMenu = [
     [
@@ -262,6 +345,12 @@ export default function ProfileScreen() {
           ) : (
             <FontAwesome5 name="user-circle" size={100} color="#2BC169" />
           )}
+
+          <Pressable style={styles.avatarChangeBlock} onPress={pickNewAvatar}>
+            <Text style={styles.avatarChangeBlockText}>
+              <Entypo name="edit" size={18} color="#fff" />
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.minifyProfileInformation}>
