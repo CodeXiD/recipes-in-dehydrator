@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarImage: {
-    width: 75,
-    height: 75,
+    width: 124,
+    height: 124,
   },
   avatar: {
     position: 'relative',
@@ -127,6 +127,7 @@ export default function ProfileScreen() {
       if (fileName) {
         const match = /\.(\w+)$/.exec(fileName);
         const type = match ? `image/${match[1]}` : `image`;
+        const oldAvatarFile = user.userData.avatarFile;
 
         uploadFile
           .upload(result.uri, fileName, type)
@@ -139,6 +140,7 @@ export default function ProfileScreen() {
             return api().get('/auth/profile');
           })
           .then(({ data }) => {
+            if (oldAvatarFile) uploadFile.remove(oldAvatarFile.id);
             user.setUserData(data);
             Toast.show({
               type: 'success',
@@ -314,7 +316,7 @@ export default function ProfileScreen() {
         <View style={styles.minifyProfileInformationContainer}>
           <View style={styles.avatar}>
             <AntDesign
-              style={styles.avatarImage}
+              style={[styles.avatarImage, { width: 75, height: 75 }]}
               name="user"
               size={75}
               color="gray"
