@@ -17,12 +17,19 @@ const styles = StyleSheet.create({
   },
 });
 
+type Props = {
+  children: string;
+  disabled?: boolean;
+  buttonStyles?: any;
+  onPress?: () => void;
+};
+
 export default function BaseButton({
-  children = '',
-  disabled = false,
-  buttonStyles = {},
-  onPress = () => undefined,
-}) {
+  children,
+  disabled,
+  buttonStyles,
+  onPress,
+}: Props) {
   return (
     <TouchableOpacity
       activeOpacity={0.3}
@@ -34,3 +41,9 @@ export default function BaseButton({
     </TouchableOpacity>
   );
 }
+
+BaseButton.defaultProps = {
+  disabled: false,
+  buttonStyles: {},
+  onPress: () => undefined,
+};

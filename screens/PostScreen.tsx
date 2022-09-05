@@ -1,9 +1,21 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
 import SimpleHeader from '../components/UI/navigations/SimpleHeader';
 import SimpleLoader from '../components/UI/general/SimpleLoader';
 import MainLayout from '../layouts/MainLayout';
 import useApi from '../composables/useApi';
+import { setFavorites } from '../store/favorites/favoritesSlice';
+import { RootState } from '../store';
 
 const styles = StyleSheet.create({
   container: {
@@ -12,11 +24,23 @@ const styles = StyleSheet.create({
   },
   postImageWrapper: {
     marginTop: 24,
+    position: 'relative',
   },
   postImage: {
     width: '100%',
     height: 250,
     borderRadius: 12,
+  },
+  favoriteControlButton: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
+    backgroundColor: '#fff',
+    width: 40,
+    height: 40,
+    borderRadius: 40 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   postDetails: {
     marginTop: 14,
@@ -53,6 +77,74 @@ export default function PostScreen({
   const api = useApi();
   const [isLoading, setLoading] = useState(false);
   const [post, setPost] = useState<null | any>(null);
+  const dispatch = useDispatch();
+  const favoritesState = useSelector((state: RootState) => state.favorites);
+
+  const existFavoritePostItem = useMemo(() => {
+    return favoritesState.favorites.find(
+      (favoriteItem: any) => favoriteItem.post.id === postId,
+    );
+  }, [postId, favoritesState.favorites]);
+
+  const addToFavorites = () => {
+    api()
+      .post('/users/favorites/', { postId })
+      .then(() => {
+        return api().get('/users/favorites');
+      })
+      .then(({ data }) => {
+        dispatch(setFavorites(data));
+        Toast.show({
+          type: 'success',
+          text1: 'Збережені рецепти',
+          text2: 'Ви успішно зберегли рецепт',
+          visibilityTime: 6000,
+          position: 'bottom',
+          bottomOffset: 100,
+        });
+      })
+      .catch(() => {
+        Toast.show({
+          type: 'error',
+          text1: 'Збережені рецепти',
+          text2:
+            'Під час додавання рецепту до збережених сталася помилка, спробуйте пізніше',
+          visibilityTime: 6000,
+          position: 'bottom',
+          bottomOffset: 100,
+        });
+      });
+  };
+
+  const removeFromFavorites = () => {
+    api()
+      .delete(`/users/favorites/${existFavoritePostItem.id}`)
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Збережені рецепти',
+          text2: 'Ви успішно видалили збережений рецепт',
+          visibilityTime: 6000,
+          position: 'bottom',
+          bottomOffset: 100,
+        });
+        return api().get('/users/favorites');
+      })
+      .then(({ data }) => {
+        dispatch(setFavorites(data));
+      })
+      .catch(() => {
+        Toast.show({
+          type: 'error',
+          text1: 'Збережені рецепти',
+          text2:
+            'Під час додавання рецепту до збережених сталася помилка, спробуйте пізніше',
+          visibilityTime: 6000,
+          position: 'bottom',
+          bottomOffset: 100,
+        });
+      });
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -90,6 +182,19 @@ export default function PostScreen({
           style={styles.postImage}
           source={{ uri: post.imageFile.downloadUrl }}
         />
+
+        <TouchableOpacity
+          style={styles.favoriteControlButton}
+          onPress={() =>
+            existFavoritePostItem ? removeFromFavorites() : addToFavorites()
+          }
+        >
+          <MaterialIcons
+            name={existFavoritePostItem ? 'favorite' : 'favorite-outline'}
+            size={24}
+            color={existFavoritePostItem ? '#ef9f40' : '#000'}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.postDetails}>

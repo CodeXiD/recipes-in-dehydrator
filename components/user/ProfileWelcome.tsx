@@ -44,10 +44,10 @@ export default function ProfileWelcome() {
         </Text>
       </View>
 
-      {user.isLoggedIn ? (
+      {user.isLoggedIn && user.userData.avatarFile ? (
         <Image
           style={styles.userAvatar}
-          source={{ uri: user.userData.avatarUrl }}
+          source={{ uri: user.userData.avatarFile.downloadUrl }}
         />
       ) : (
         <AntDesign
